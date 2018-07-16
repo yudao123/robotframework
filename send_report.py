@@ -15,7 +15,7 @@ import zipfile
 # smtp_password='8u7e6Pj6fLuiFaw'
 
 email_sender=os.getenv('EMAIL_SENDER', 'yinghua.yu@daocloud.io')
-email_receivers=os.getenv('EMAIL_SENDER', email_sender)
+email_receivers=os.getenv('EMAIL_RECEIVERS', email_sender)
 email_receivers=email_receivers.split(';')
 smtp_host=os.getenv('SMTP_HOST', 'smtp.partner.outlook.cn')
 smtp_port=os.getenv('SMTP_PORT', 587)
