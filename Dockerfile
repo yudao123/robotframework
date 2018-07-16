@@ -9,4 +9,6 @@ RUN pip install -U \
     robotframework==3.0.2 \
     robotframework-selenium2library==1.8.0 \
     selenium==2.53.6 \
-    robotframework-ftplibrary
+    robotframework-ftplibrary \
+    robotframework-excellibrary==0.0.2 \
+    robotframework-requests==0.4.7
