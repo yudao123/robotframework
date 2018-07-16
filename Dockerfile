@@ -1,5 +1,9 @@
 FROM ubuntu:16.04
 
+WORKDIR /opt/robot
+
+COPY send_report.py /opt/robot
+
 RUN sed -i -s 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 RUN apt-get update && apt-get install -y \
   python python-pip
@@ -11,4 +15,6 @@ RUN pip install -U \
     selenium==2.53.6 \
     robotframework-ftplibrary \
     robotframework-excellibrary==0.0.2 \
-    robotframework-requests==0.4.7
+    robotframework-requests==0.4.7 \
+    pyzmail==1.0.3 \
+    xmltodict==0.11.0
