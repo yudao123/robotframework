@@ -3,7 +3,6 @@
 import os, sys
 import json
 import xmltodict
-import pyzmail
 import zipfile
 
 # email_sender='yinghua.yu@daocloud.io'
@@ -24,6 +23,7 @@ smtp_login=os.getenv('SMTP_LOGIN', email_sender)
 smtp_password=os.getenv('SMTP_PASSWORD', '8u7e6Pj6fLuiFaw')
 
 def send_email(title, content, send_filepath):
+    import pyzmail
     filename = os.path.basename(send_filepath)
     attach_file=(open(send_filepath).read(), 'application', 'octet-stream', filename, '')
     payload, mail_from, rcpt_to, msg_id=pyzmail.compose_mail(email_sender, \
@@ -39,25 +39,32 @@ def send_email(title, content, send_filepath):
 def make_report(output_xml_filepath):
     robot_report = xmltodict.parse(open(output_xml_filepath).read())
     stat_info = robot_report['robot']['statistics']
-    # print(json.dumps(robot_report['robot']['statistics'], indent=4))
+    print(json.dumps(robot_report['robot']['statistics'], indent=4))
     content = '<h2>Test Complete!</h2>'
     content += '<h2>Total Stat:</h2><h3><ul>'
     for item in stat_info['total']['stat']:
         content += '<li>{}: {} pass(es) , {} fail(s)</li>'.format(item['#text'], item['@pass'], item['@fail'])
     content += '</ul></h3>'
     content += '<h2>Suite Stat:</h2><h3><ul>'
-    stat = stat_info['suite']['stat']
-    content += '<li>{}: {} pass(es) , {} fail(s)</li>'.format(stat['#text'], stat['@pass'], stat['@fail'])
+    suite_stat = stat_info['suite']['stat']
+    if isinstance(suite_stat, dict):
+        stats = [suite_stat]
+    else:
+        stats = suite_stat
+    for stat in stats:
+        stat_name = stat.get('@name', stat['#text'])
+        content += '<li>{}: {} pass(es) , {} fail(s)</li>'.format(stat_name, stat['@pass'], stat['@fail'])
     content += '</ul></h3>'
     return content
 
 def make_and_send_report(base_dir):
     content = make_report(os.path.join(base_dir, 'output.xml'))
-    with zipfile.ZipFile('EMSBTestReport.zip', 'w') as fp:
+    with zipfile.ZipFile('TestReport.zip', 'w') as fp:
         fp.write(os.path.join(base_dir, 'output.xml'), 'output.xml')
         fp.write(os.path.join(base_dir, 'log.html'), 'log.html')
         fp.write(os.path.join(base_dir, 'report.html'), 'report.html')
-    send_email(u'EMSB Test Report', content, 'EMSBTestReport.zip')
+    send_email(u'Test Report', content, 'TestReport.zip')
+    # open('output.html','w').write(content)
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
