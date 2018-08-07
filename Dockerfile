@@ -2,6 +2,8 @@ FROM ubuntu:16.04
 
 WORKDIR /opt/robot
 
+ENV LANG=C.UTF-8
+
 COPY send_report.py /opt/robot
 
 RUN sed -i -s 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
